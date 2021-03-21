@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  device:
+    image: azureiot/device
+    build:
+      context: .
+      dockerfile: Device/Dockerfile
+
+  backend:
+    image: azureiot/backend
+    build:
+      context: .
+      dockerfile: Backend/Dockerfile
