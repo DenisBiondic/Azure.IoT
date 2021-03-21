@@ -15,9 +15,6 @@ namespace Device
             var sample = new DeviceSimulator(enrollmentId, enrollmentPrimaryKey, enrollmentIdScope);
             await sample.RunSampleAsync();
 
-            Console.WriteLine("Enter any key to exit.");
-            Console.ReadKey();
-
             return 0;
         }
     }

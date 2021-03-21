@@ -6,9 +6,19 @@ services:
     build:
       context: .
       dockerfile: Device/Dockerfile
+    environment:
+      ENVIRONMENT_TAG: ${ENVIRONMENT_TAG}
+      ENROLLMENT_ID: ${ENROLLMENT_ID}
+      ENROLLMENT_PRIMARY_KEY: ${ENROLLMENT_PRIMARY_KEY}
+      ENROLLMENT_ID_SCOPE: ${ENROLLMENT_ID_SCOPE}
 
   backend:
     image: azureiot/backend
     build:
       context: .
       dockerfile: Backend/Dockerfile
+    environment:
+      ENVIRONMENT_TAG: ${ENVIRONMENT_TAG}
+      ENROLLMENT_ID: ${ENROLLMENT_ID}
+      ENROLLMENT_PRIMARY_KEY: ${ENROLLMENT_PRIMARY_KEY}
+      ENROLLMENT_ID_SCOPE: ${ENROLLMENT_ID_SCOPE}
