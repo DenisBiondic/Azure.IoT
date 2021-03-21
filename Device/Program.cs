@@ -1,12 +1,24 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Device
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            // Parse application parameters
+            var enrollmentId = System.Environment.GetEnvironmentVariable("ENROLLMENT_ID");
+            var enrollmentPrimaryKey = System.Environment.GetEnvironmentVariable("ENROLLMENT_PRIMARY_KEY");
+            var enrollmentIdScope = System.Environment.GetEnvironmentVariable("ENROLLMENT_ID_SCOPE");
+
+            var sample = new DeviceSimulator(enrollmentId, enrollmentPrimaryKey, enrollmentIdScope);
+            await sample.RunSampleAsync();
+
+            Console.WriteLine("Enter any key to exit.");
+            Console.ReadKey();
+
+            return 0;
         }
     }
 }
