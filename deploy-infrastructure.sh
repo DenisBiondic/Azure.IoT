@@ -4,20 +4,25 @@ set -e
 # NOTE: Azure CLI code below is for simple demonstrative purposes. Consider using a tool like Terraform instead for writing your
 #       Infrastructure as Code
 
-set -a
-[ -f .env ] && . .env
-set +a
+function read_parameters {
+  set -a
+  [ -f .env ] && . .env
+  set +a
 
-echo "IMPORTANT: make sure you are logged in to the azure subscription where you want to deploy the resources!"
+  echo "IMPORTANT: make sure you are logged in to the azure subscription where you want to deploy the resources!"
 
-if [ -z "$ENVIRONMENT_TAG" ]; then
-  echo "ENVIRONMENT_TAG missing. Fill our the .env file"
-  exit 1 
-fi
+  if [ -z "$ENVIRONMENT_TAG" ]; then
+    echo "ENVIRONMENT_TAG missing. Fill our the .env file"
+    exit 1 
+  fi
+}
+
+read_parameters
 
 resource_group="azureiot-neu-$ENVIRONMENT_TAG-rg"
 hub="azureiot-neu-$ENVIRONMENT_TAG-hub"
 dps="azureiot-neu-$ENVIRONMENT_TAG-dps"
+storage="azureiot$ENVIRONMENT_TAG"
 
 # we will group everything into a single group, it will be easier to remove everything later
 echo "Creating the resource group..."
@@ -45,9 +50,13 @@ echo "Reading out the device enrollment credentials..."
 enrollment_primary_key=$(az iot dps enrollment show --enrollment-id $enrollment_id --dps-name $dps --resource-group $resource_group --keys --query attestation.symmetricKey.primaryKey)
 enrollment_id_scope=$(az iot dps show --name $dps --resource-group $resource_group --query properties.idScope)
 
+# for cloud endpoint, we need the connection credentials
+iot_hub_backend_connection_string=$(az iot hub connection-string show -n $hub --policy-name service --query connectionString --eh)
+
 # remove prefix and suffix "
 enrollment_primary_key=$(sed -e 's/^"//' -e 's/"$//' <<<$enrollment_primary_key)
 enrollment_id_scope=$(sed -e 's/^"//' -e 's/"$//' <<<$enrollment_id_scope)
+iot_hub_backend_connection_string=$(sed -e 's/^"//' -e 's/"$//' <<<$iot_hub_backend_connection_string)
 
 echo "Successfully completed!"
 echo "Copy the following values to your .env file"
@@ -55,4 +64,6 @@ echo "===================================================================="
 echo "ENROLLMENT_ID=$enrollment_id"
 echo "ENROLLMENT_PRIMARY_KEY=$enrollment_primary_key"
 echo "ENROLLMENT_ID_SCOPE=$enrollment_id_scope"
+echo "BACKEND_IOT_HUB_CONNECTION_STRING=$iot_hub_backend_connection_string"
+echo "BACKEND_IOT_HUB_EVENT_HUB_ENDPOINT_NAME=$hub"
 echo "===================================================================="
