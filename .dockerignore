@@ -22,4 +22,7 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
+**/deploy-apps.sh
+**/deploy-infrastructure.sh
+**/naming-conventions.sh
 README.md
