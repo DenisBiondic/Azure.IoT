@@ -15,14 +15,16 @@ function read_parameters {
     echo "ENVIRONMENT_TAG missing. Fill our the .env file"
     exit 1 
   fi
+
+  if [ -z "$BACKEND_IMAGE_NAME" ]; then
+    echo "BACKEND_IMAGE_NAME missing. Fill our the .env file"
+    exit 1 
+  fi
 }
 
 read_parameters
 
-resource_group="azureiot-neu-$ENVIRONMENT_TAG-rg"
-hub="azureiot-neu-$ENVIRONMENT_TAG-hub"
-dps="azureiot-neu-$ENVIRONMENT_TAG-dps"
-storage="azureiot$ENVIRONMENT_TAG"
+source ./naming-conventions.sh
 
 # we will group everything into a single group, it will be easier to remove everything later
 echo "Creating the resource group..."
@@ -52,6 +54,10 @@ enrollment_id_scope=$(az iot dps show --name $dps --resource-group $resource_gro
 
 # for cloud endpoint, we need the connection credentials
 iot_hub_backend_connection_string=$(az iot hub connection-string show -n $hub --policy-name service --query connectionString --eh)
+
+# setup the app service for optional backend service hosting
+echo "Creating the Container Registry..."
+az acr create --name $registry --resource-group $resource_group --sku Basic --admin-enabled true -o table
 
 # remove prefix and suffix "
 enrollment_primary_key=$(sed -e 's/^"//' -e 's/"$//' <<<$enrollment_primary_key)
