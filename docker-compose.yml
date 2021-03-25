@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   device:
-    image: azureiot/device
+    image: ${DEVICE_IMAGE_NAME}
     build:
       context: .
       dockerfile: Device/Dockerfile
@@ -13,7 +13,7 @@ services:
       ENROLLMENT_ID_SCOPE: ${ENROLLMENT_ID_SCOPE}
 
   backend:
-    image: azureiot/backend
+    image: ${BACKEND_IMAGE_NAME}
     build:
       context: .
       dockerfile: Backend/Dockerfile
